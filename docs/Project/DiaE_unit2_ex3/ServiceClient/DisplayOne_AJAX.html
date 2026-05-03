@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Display One Student (AJAX)</title>
+
+<script>
+function getStudent() {
+
+    var id = document.getElementById("studentId").value;
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("GET", "../ServiceProvider/student_API.php?action=getOne&id=" + id, true);
+
+    xhr.onload = function() {
+
+        if (xhr.status == 200) {
+
+            var data = JSON.parse(xhr.responseText);
+
+            if (data) {
+                document.getElementById("result").innerHTML =
+                    "ID: " + data.id + "<br>" +
+                    "Name: " + data.name + "<br>" +
+                    "Major: " + data.major + "<br>" +
+                    "GPA: " + data.gpa + "<br>" +
+                    "Loans: $" + data.student_loans;
+            } else {
+                document.getElementById("result").innerHTML = "No record found.";
+            }
+
+        }
+    };
+
+    xhr.send();
+}
+</script>
+
+</head>
+
+<body>
+
+<h2>Display One Student (AJAX)</h2>
+
+Enter Student ID:
+<input type="number" id="studentId">
+
+<br><br>
+
+<button onclick="getStudent()">Get Student</button>
+
+<br><br>
+
+<div id="result"></div>
+
+</body>
+</html>

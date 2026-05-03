@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Library Management - Client</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f0f0f0; }
+        header { background: #1B4332; color: white; padding: 20px; text-align: center; }
+        nav { background: #2d6a4f; display: flex; justify-content: center; gap: 10px; padding: 10px; }
+        nav button { background: white; color: #1B4332; border: none; padding: 8px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        nav button.active, nav button:hover { background: #95d5b2; }
+        .container { max-width: 900px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        h2 { color: #1B4332; border-bottom: 2px solid #1B4332; padding-bottom: 5px; }
+        h3 { color: #2d6a4f; }
+        input { margin: 5px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+        button.action-btn { background: #1B4332; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin: 5px; }
+        button.action-btn:hover { background: #2d6a4f; }
+        .json-output { background: #222; color: #0f0; padding: 10px; margin-top: 10px; border-radius: 4px; white-space: pre-wrap; font-size: 13px; min-height: 40px; }
+        .tester-link { display: inline-block; margin-top: 20px; background: #2d6a4f; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Library Management Web Service</h1>
+    <p>Scrum3_Team_X | CIS 266</p>
+</header>
+
+<nav>
+    <button class="active" onclick="showSection('books', this)">Books</button>
+    <button onclick="showSection('members', this)">Members</button>
+    <button onclick="showSection('loans', this)">Loans</button>
+    <button onclick="showSection('tester', this)">Run Tester</button>
+</nav>
+
+<div class="container">
+
+    <!-- BOOKS -->
+    <div id="books" class="section active">
+        <h2>Books</h2>
+
+        <h3>Get All Books</h3>
+        <button class="action-btn" onclick="getAll('books')">Load All Books</button>
+        <div class="json-output" id="books-getall-json">JSON will appear here...</div>
+
+        <h3>Get Book by ID</h3>
+        <input type="number" id="books-getbyid-input" placeholder="Book ID">
+        <button class="action-btn" onclick="getById('books', 'books-getbyid-input', 'books-getbyid-json')">Get Book</button>
+        <div class="json-output" id="books-getbyid-json">JSON will appear here...</div>
+
+        <h3>Add Book</h3>
+        <input type="text" id="book-title" placeholder="Title">
+        <input type="text" id="book-author" placeholder="Author">
+        <input type="text" id="book-genre" placeholder="Genre">
+        <input type="number" id="book-year" placeholder="Year">
+        <button class="action-btn" onclick="insertBook()">Add Book</button>
+        <div class="json-output" id="books-insert-json">JSON will appear here...</div>
+
+        <h3>Update Book</h3>
+        <input type="number" id="book-update-id" placeholder="Book ID">
+        <input type="text" id="book-update-title" placeholder="New Title">
+        <input type="text" id="book-update-author" placeholder="New Author">
+        <input type="text" id="book-update-genre" placeholder="New Genre">
+        <input type="number" id="book-update-year" placeholder="New Year">
+        <button class="action-btn" onclick="updateBook()">Update Book</button>
+        <div class="json-output" id="books-update-json">JSON will appear here...</div>
+
+        <h3>Delete Book</h3>
+        <input type="number" id="book-delete-id" placeholder="Book ID">
+        <button class="action-btn" onclick="deleteRecord('books', 'book-delete-id', 'books-delete-json')">Delete Book</button>
+        <div class="json-output" id="books-delete-json">JSON will appear here...</div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div id="members" class="section">
+        <h2>Members</h2>
+
+        <h3>Get All Members</h3>
+        <button class="action-btn" onclick="getAll('members')">Load All Members</button>
+        <div class="json-output" id="members-getall-json">JSON will appear here...</div>
+
+        <h3>Get Member by ID</h3>
+        <input type="number" id="members-getbyid-input" placeholder="Member ID">
+        <button class="action-btn" onclick="getById('members', 'members-getbyid-input', 'members-getbyid-json')">Get Member</button>
+        <div class="json-output" id="members-getbyid-json">JSON will appear here...</div>
+
+        <h3>Add Member</h3>
+        <input type="text" id="member-name" placeholder="Name">
+        <input type="email" id="member-email" placeholder="Email">
+        <input type="text" id="member-phone" placeholder="Phone">
+        <input type="date" id="member-joindate">
+        <button class="action-btn" onclick="insertMember()">Add Member</button>
+        <div class="json-output" id="members-insert-json">JSON will appear here...</div>
+
+        <h3>Update Member</h3>
+        <input type="number" id="member-update-id" placeholder="Member ID">
+        <input type="text" id="member-update-name" placeholder="New Name">
+        <input type="email" id="member-update-email" placeholder="New Email">
+        <input type="text" id="member-update-phone" placeholder="New Phone">
+        <input type="date" id="member-update-joindate">
+        <button class="action-btn" onclick="updateMember()">Update Member</button>
+        <div class="json-output" id="members-update-json">JSON will appear here...</div>
+
+        <h3>Delete Member</h3>
+        <input type="number" id="member-delete-id" placeholder="Member ID">
+        <button class="action-btn" onclick="deleteRecord('members', 'member-delete-id', 'members-delete-json')">Delete Member</button>
+        <div class="json-output" id="members-delete-json">JSON will appear here...</div>
+    </div>
+
+    <!-- LOANS -->
+    <div id="loans" class="section">
+        <h2>Loans</h2>
+
+        <h3>Get All Loans</h3>
+        <button class="action-btn" onclick="getAll('loans')">Load All Loans</button>
+        <div class="json-output" id="loans-getall-json">JSON will appear here...</div>
+
+        <h3>Get Loan by ID</h3>
+        <input type="number" id="loans-getbyid-input" placeholder="Loan ID">
+        <button class="action-btn" onclick="getById('loans', 'loans-getbyid-input', 'loans-getbyid-json')">Get Loan</button>
+        <div class="json-output" id="loans-getbyid-json">JSON will appear here...</div>
+
+        <h3>Add Loan</h3>
+        <input type="number" id="loan-bookid" placeholder="Book ID">
+        <input type="number" id="loan-memberid" placeholder="Member ID">
+        <input type="date" id="loan-loandate">
+        <input type="date" id="loan-returndate">
+        <button class="action-btn" onclick="insertLoan()">Add Loan</button>
+        <div class="json-output" id="loans-insert-json">JSON will appear here...</div>
+
+        <h3>Update Loan</h3>
+        <input type="number" id="loan-update-id" placeholder="Loan ID">
+        <input type="number" id="loan-update-bookid" placeholder="New Book ID">
+        <input type="number" id="loan-update-memberid" placeholder="New Member ID">
+        <input type="date" id="loan-update-loandate">
+        <input type="date" id="loan-update-returndate">
+        <button class="action-btn" onclick="updateLoan()">Update Loan</button>
+        <div class="json-output" id="loans-update-json">JSON will appear here...</div>
+
+        <h3>Delete Loan</h3>
+        <input type="number" id="loan-delete-id" placeholder="Loan ID">
+        <button class="action-btn" onclick="deleteRecord('loans', 'loan-delete-id', 'loans-delete-json')">Delete Loan</button>
+        <div class="json-output" id="loans-delete-json">JSON will appear here...</div>
+    </div>
+
+    <!-- TESTER LINK -->
+    <div id="tester" class="section">
+        <h2>Run Testers</h2>
+        <p>Opens the full PHP tester showing all CRUD operations and JSON API responses:</p>
+        <a class="tester-link" href="../Provider_X/Testers/index.php" target="_blank">Open Testers/index.php</a>
+    </div>
+
+</div>
+
+<script>
+    const API = "../Provider_X/API_X/API_X.php";
+
+    function showSection(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function showJSON(elementId, data) {
+        document.getElementById(elementId).textContent = JSON.stringify(data, null, 2);
+    }
+
+    function getAll(table) {
+        fetch(API + "?action=getAll&table=" + table)
+            .then(res => res.json())
+            .then(data => showJSON(table + "-getall-json", data));
+    }
+
+    function getById(table, inputId, outputId) {
+        var id = document.getElementById(inputId).value;
+        fetch(API + "?action=getById&table=" + table + "&id=" + id)
+            .then(res => res.json())
+            .then(data => showJSON(outputId, data));
+    }
+
+    function deleteRecord(table, inputId, outputId) {
+        var id = document.getElementById(inputId).value;
+        var formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('table', table);
+        formData.append('id', id);
+        fetch(API, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => showJSON(outputId, data));
+    }
+
+    function insertBook() {
+        var formData = new FormData();
+        formData.append('action', 'insert');
+        formData.append('table', 'books');
+        formData.append('title', document.getElementById('book-title').value);
+        formData.append('author', document.getElementById('book-author').value);
+        formData.append('genre', document.getElementById('book-genre').value);
+        formData.append('year', document.getElementById('book-year').value);
+        fetch(API, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => showJSON('books-insert-json', data));
+    }
+
+    function updateBook() {
+        var formData = new FormData();
+        formData.append('action', 'update');
+        formData.append('table', 'books');
+        formData.append('id', document.getElementById('book-update-id').value);
+        formData.append('title', document.getElementById('book-update-title').value);
+        formData.append('author', document.getElementById('book-update-author').value);
+        formData.append('genre', document.getElementById('book-update-genre').value);
+        formData.append('year', document.getElementById('book-update-year').value);
+        fetch(API, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => showJSON('books-update-json', data));
+    }
+
+    function insertMember() {
+        var formData = new FormData();
+        formData.append('action', 'insert');
+        formData.append('table', 'members');
+        formData.append('name', document.getElementById('member-name').value);
+        formData.append('email', document.getElementById('member-email').value);
+        formData.append('phone', document.getElementById('member-phone').value);
+        formData.append('join_date', document.getElementById('member-joindate').value);
+        fetch(API, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => showJSON('members-insert-json', data));
+    }
+
+    function updateMember() {
+        var formData = new FormData();
+        formData.append('action', 'update');
+        formData.append('table', 'members');
+        formData.append('id', document.getElementById('member-update-id').value);
+        formData.append('name', document.getElementById('member-update-name').value);
+        formData.append('email', document.getElementById('member-update-email').value);
+        formData.append('phone', document.getElementById('member-update-phone').value);
+        formData.append('join_date', document.getElementById('member-update-joindate').value);
+        fetch(API, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => showJSON('members-update-json', data));
+    }
+
+    function insertLoan() {
+        var formData = new FormData();
+        formData.append('action', 'insert');
+        formData.append('table', 'loans');
+        formData.append('book_id', document.getElementById('loan-bookid').value);
+        formData.append('member_id', document.getElementById('loan-memberid').value);
+        formData.append('loan_date', document.getElementById('loan-loandate').value);
+        formData.append('return_date', document.getElementById('loan-returndate').value);
+        fetch(API, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => showJSON('loans-insert-json', data));
+    }
+
+    function updateLoan() {
+        var formData = new FormData();
+        formData.append('action', 'update');
+        formData.append('table', 'loans');
+        formData.append('id', document.getElementById('loan-update-id').value);
+        formData.append('book_id', document.getElementById('loan-update-bookid').value);
+        formData.append('member_id', document.getElementById('loan-update-memberid').value);
+        formData.append('loan_date', document.getElementById('loan-update-loandate').value);
+        formData.append('return_date', document.getElementById('loan-update-returndate').value);
+        fetch(API, { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => showJSON('loans-update-json', data));
+    }
+</script>
+
+</body>
+</html>

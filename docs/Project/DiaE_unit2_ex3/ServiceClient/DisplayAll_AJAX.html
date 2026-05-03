@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Display All Students (AJAX)</title>
+
+<script>
+function getAllStudents() {
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("GET", "../ServiceProvider/student_API.php?action=getAll", true);
+
+    xhr.onload = function() {
+
+        if (xhr.status == 200) {
+
+            var data = JSON.parse(xhr.responseText);
+
+            var output = "";
+
+            for (var i = 0; i < data.length; i++) {
+
+                output +=
+                    "ID: " + data[i].id + " | " +
+                    "Name: " + data[i].name + " | " +
+                    "Major: " + data[i].major + " | " +
+                    "GPA: " + data[i].gpa + " | " +
+                    "Loans: $" + data[i].student_loans +
+                    "<br><br>";
+            }
+
+            document.getElementById("result").innerHTML = output;
+        }
+    };
+
+    xhr.send();
+}
+</script>
+
+</head>
+
+<body>
+
+<h2>Display All Students (AJAX)</h2>
+
+<button onclick="getAllStudents()">Load All Students</button>
+
+<br><br>
+
+<div id="result"></div>
+
+</body>
+</html>

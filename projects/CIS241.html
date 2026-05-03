@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Ethan Diaz
+        </title>
+        <link rel="stylesheet" href="../css/styles.css">
+    </head>
+
+    <body>
+
+        <header>
+            <h1>Ethan Diaz</h1> 
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../docs/EthanDiazResume.pdf">Resume</a></li>
+                    <li><a href="../CIS_Syllabi.html">CIS Syllabi</a></li>
+                    <li><a href="Java.html">Java Project</a></li>
+                    <li><a href="../projects/CIS296.html">MVC Projects</a></li>
+                    <li><a href="../projects/CIS241.html">PHP/MySQL Projects</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <h2>Welcome</h2>
+
+            <p>This project is a dynamic PHP/MySQL web application built using a Model-View-Controller (MVC) architecture.
+                It allows full CRUD operations for products, customers, suppliers, and categories using a MySQL database.
+                The system is hosted locally using XAMPP and demonstrates server-side processing, database integration,
+                and modular PHP design.
+            </p>
+        
+            <div class="code-container">
+            <img src="../images/CIS241_screenshot.PNG" >
+            <img src="../images/CIS241_screenshot_1.PNG">
+            <img src="../images/CIS241_screenshot_2.PNG">
+            </div>
+
+
+            <a href="http://localhost/website">
+            View Live Product Catalog (XAMPP Required)
+            </a>
+
+            <h3>Sample SQL Query</h3>
+
+            <pre>
+            SELECT p.name, p.description, p.price,
+                s.name AS supplier,
+                c.name AS category
+            FROM products p
+            JOIN suppliers s ON p.supplier_id = s.supplier_id
+            JOIN product_categories c ON p.category_id = c.category_id;
+            </pre>
+
+            <h3>Sample Output</h3>
+
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>stock_quantity</th>
+                    <th>Supplier</th>
+                    <th>Category</th>
+                </tr>
+                <tr>
+                    <td>Apple</td>
+                    <td>Fresh red apple</td>
+                    <td class="right">0.50</td>
+                    <td>100</td>
+                    <td>Fresh Foods</td>
+                    <td>Produce</td>
+                </tr>
+            </table>
+            
+            <p>This demonstrates a JOIN between products and categories tables.</p>
+        </main>
+
+    </body>
+</html>
