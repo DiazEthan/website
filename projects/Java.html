@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Ethan Diaz
+        </title>
+        <link rel="stylesheet" href="../css/styles.css">
+    </head>
+
+    <body>
+
+        <header>
+            <h1>Ethan Diaz</h1> 
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../docs/EthanDiazResume.pdf">Resume</a></li>
+                    <li><a href="../CIS_Syllabi.html">CIS Syllabi</a></li>
+                    <li><a href="Java.html">Java Project</a></li>
+                    <li><a href="../projects/CIS296.html">MVC Projects</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <h2>Welcome</h2>
+            <p>This is Ethan Diaz demonstration on Object Oriented Programming</p>
+
+            <p>Here we have a Hangman game created with Java. It cheak a word text file to read the words to chose and have it randonly use them for you to guess. </p>
+        
+            <img src="../images/CIS249_Java_screenshot.PNG" width="400">
+        
+            <h2>Sample code</h2>
+            <div class="code-container">
+            <pre>
+                (Wordlist.java)
+                
+                package morris.HangMan;
+
+            import java.io.*;
+            import java.util.ArrayList;
+
+            public class Wordlist 
+            {
+                private final String FILENAME = "words.txt";
+                private ArrayList<String> words;
+                
+                public Wordlist() {
+                    words = new ArrayList<>();
+
+                    try(var in = new BufferedReader
+                    (
+                        new FileReader(FILENAME)))
+                    {
+                        String word = in.readLine();
+                        while(word != null) 
+                        {
+                            words.add(word);
+                            word = in.readLine();
+                        }
+                    }
+                    catch(FileNotFoundException e) 
+                    {
+                        System.out.println(FILENAME + " not found.");
+                    }
+                    catch(IOException e) 
+                    {
+                        System.out.println(e);
+                    }
+                }
+                
+                public String getRandomWord() {
+                    int length = words.size();
+                    if (length == 0) {
+                        return "";
+                    } else {
+                        int index = (int) (Math.random() * length);
+                        return words.get(index);
+                    }
+                }
+                
+                public String addSpaces(String word) {
+                    return String.join(" ", word.split(""));
+                }
+            }
+            </pre>
+            <pre>
+                
+                (HangmanApp.java)
+
+                package morris.HangMan;
+
+                import javafx.application.Application;
+                import javafx.geometry.Insets;
+                import javafx.geometry.Pos;
+                import javafx.scene.Scene;
+                import javafx.scene.control.Alert;
+                import javafx.scene.control.Button;
+                import javafx.scene.control.Label;
+                import javafx.scene.control.TextField;
+                import javafx.scene.layout.GridPane;
+                import javafx.scene.layout.HBox;
+                import javafx.scene.layout.VBox;
+                import javafx.scene.text.Font;
+                import javafx.stage.Stage;
+
+
+                /**
+                * JavaFX App
+                */
+                public class HangManApp extends Application {
+                    private TextField letterField;
+
+                    private Label statusLbl = new Label();
+                    private Label hangmanLabel = new Label();
+                    Hangman hangman = new Hangman();
+
+                    @Override
+                    public void start(Stage primaryStage) {
+                        primaryStage.setTitle("Play the H A N G M A N game");
+
+                        GridPane grid = new GridPane();
+                        grid.setAlignment(Pos.TOP_CENTER);
+                        grid.setPadding(new Insets(25, 25, 25, 25));
+                        grid.setHgap(10);
+                        grid.setVgap(10);
+
+                        Scene scene = new Scene(grid, 500, 400);
+
+                        VBox hangBox = new VBox(10);
+                        hangBox.getChildren().add(new Label("Enter a Letter:"));
+                        letterField = new TextField();
+                        hangBox.getChildren().add(letterField);
+
+                        Font consolasFont = Font.font("Consolas", 18);
+                        hangmanLabel.setFont(consolasFont);
+                        statusLbl.setFont(consolasFont);
+
+                        hangmanLabel.setText(hangman.drawHangman());
+                        hangBox.getChildren().add(hangmanLabel);
+                        statusLbl.setText(hangman.drawScreen());
+                        hangBox.getChildren().add(statusLbl);
+
+                        Button enterButton = new Button("Enter");
+                        enterButton.setOnAction(event -> {
+                            enterButtonClicked();
+                            hangmanLabel.setText(hangman.drawHangman());
+                        });
+
+                        Button resetButton = new Button("Reset");
+                        resetButton.setOnAction(event -> {
+                            resetButtonClicked();
+                            hangmanLabel.setText(hangman.drawHangman());
+                        });
+
+                        Button exitButton = new Button("Exit");
+                        exitButton.setOnAction(event -> exitButtonClicked());
+
+                        HBox buttonBox = new HBox(10);
+                        buttonBox.getChildren().addAll(enterButton, resetButton, exitButton);
+                        buttonBox.setAlignment(Pos.BOTTOM_CENTER);
+
+                        grid.add(buttonBox, 0, 5, 1, 2);
+                        grid.add(hangBox, 0, 1);
+
+                        letterField.requestFocus();
+                        primaryStage.setScene(scene);
+                        primaryStage.show();
+                    }
+
+                    private void enterButtonClicked() {
+                        String letterStr = letterField.getText().toUpperCase();
+                        String errMsg = hangman.validateLetter(letterStr);
+                        String endMsg = "";
+
+                        if (errMsg.isEmpty()) {
+                            char letterC = letterStr.charAt(0);
+                            int index = hangman.getWord().indexOf(letterC);
+
+                            if (index == -1) {
+                                // Wrong guess
+                                hangman.setNumWrong(hangman.getNumWrong() + 1);
+                            } else {
+                                // Correct guess
+                                StringBuilder newDisplayedWord = new StringBuilder(hangman.getDisplayedWord());
+                                for (int i = 0; i < hangman.getWordLength(); i++) {
+                                    if (hangman.getWord().charAt(i) == letterC) {
+                                        newDisplayedWord.setCharAt(i, letterC);
+                                    }
+                                }
+                                hangman.setDisplayedWord(newDisplayedWord.toString());
+                            }
+
+                            // Check if the player has reached 7 wrong guesses
+                            if (hangman.getNumWrong() >= 7) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                endMsg = String.format("Sorry, you lost. The word was %s.", hangman.getWord());
+                                alert.setHeaderText("Game Over");
+                                alert.setContentText(endMsg);
+                                alert.showAndWait();
+                                resetButtonClicked(); 
+                                return; 
+                            }
+
+                            // Check if the player has guessed the word
+                            if (hangman.getDisplayedWord().equals(hangman.getWord())) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                endMsg = String.format("Congratulations! You got it in %d guesses.", hangman.getNumGuesses());
+                                alert.setHeaderText("Game Over");
+                                alert.setContentText(endMsg);
+                                alert.showAndWait();
+                                resetButtonClicked(); 
+                                return; 
+                            }
+
+                            statusLbl.setText(hangman.drawScreen());
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setHeaderText("Invalid Data");
+                            alert.setContentText(errMsg);
+                            alert.showAndWait();
+                        }
+
+                        letterField.requestFocus();
+                        letterField.setText("");
+                    }
+
+                    private void resetButtonClicked() {
+                        hangman.resetHangman();
+                        statusLbl.setText(hangman.drawScreen());
+                    }
+
+                    private void exitButtonClicked() {
+                        System.exit(0);
+                    }
+
+                    public static void main(String[] args) {
+                        launch();
+                    }
+                }
+            </pre>
+            </div>
+        </main>
+
+    </body>
+</html>

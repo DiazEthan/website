@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Ethan Diaz
+        </title>
+        <link rel="stylesheet" href="../css/styles.css">
+    </head>
+
+    <body>
+
+        <header>
+            <h1>Ethan Diaz</h1> 
+            <nav>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../docs/EthanDiazResume.pdf">Resume</a></li>
+                    <li><a href="../CIS_Syllabi.html">CIS Syllabi</a></li>
+                    <li><a href="Java.html">Java Project</a></li>
+                    <li><a href="../projects/CIS296.html">MVC Projects</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <h2>Welcome</h2>
+
+            <p>In this Project, I created a one page web application built on ASP.NET Cord MVC. It create the game Pig Dice game. 
+                In this aplicaiton, I use the MVC pattern and uses session state to save the game inbetween request. 
+                The front end was built with Razor views and css code to create a simple page UI. This project show the use of MVC, Razor, syntax, 
+                session state management, controllers action, object-orented design, and server-side game logic</p>
+        
+            <img src="..//images/CIS296_screenshot.PNG" width="1000">
+        
+            <h2>Sample code</h2>
+            <button><a href="https://github.com/DiazEthan/CIS296_Exam2">Github code</a></button>
+            
+
+            <div class="code-container">
+                <pre>
+                    using Microsoft.AspNetCore.Mvc;
+                    using CIS296_Exam2.Models;
+                    using Microsoft.AspNetCore.Http;
+                    using System.Text.Json;
+
+                    namespace CIS296_Exam2.Controllers
+                    {
+                        public class PigGameController : Controller
+                        {
+                            private const string SessionKey = "PigGameSession";
+
+                            
+                            private static Random rnd = new Random();
+
+                            private PigGame GetGameFromSession()
+                            {
+                                var sessionData = HttpContext.Session.GetString(SessionKey);
+
+                                if (sessionData == null)
+                                    return new PigGame();
+
+                                return JsonSerializer.Deserialize<PigGame>(sessionData)!;
+                            }
+
+                            private void SaveGameToSession(PigGame game)
+                            {
+                                HttpContext.Session.SetString(SessionKey, JsonSerializer.Serialize(game));
+                            }
+
+                            public IActionResult Index()
+                            {
+                                var game = GetGameFromSession();
+                                return View(game);
+                            }
+
+                            [HttpPost]
+                            public IActionResult NewGame()
+                            {
+                                var game = new PigGame();
+                                SaveGameToSession(game);
+                                return RedirectToAction("Index");
+                            }
+
+                            [HttpPost]
+                            public IActionResult Roll()
+                            {
+                                var game = GetGameFromSession();
+                                if (game.GameOver) return RedirectToAction("Index");
+
+                                Random rand = new Random();
+                                int roll = rnd.Next(1, 7); 
+                                game.LastRoll = roll;
+
+                                if (roll == 1)
+                                {
+                                    game.TurnTotal = 0;
+                                    game.CurrentPlayer = game.CurrentPlayer == 1 ? 2 : 1;
+                                }
+                                else
+                                {
+                                    game.TurnTotal += roll;
+                                }
+
+                                SaveGameToSession(game);
+                                return RedirectToAction("Index");
+                            }
+
+                            [HttpPost]
+                            public IActionResult Hold()
+                            {
+                                var game = GetGameFromSession();
+                                if (game.GameOver) return RedirectToAction("Index");
+
+                                if (game.CurrentPlayer == 1)
+                                    game.Player1Score += game.TurnTotal;
+                                else
+                                    game.Player2Score += game.TurnTotal;
+
+                                if ((game.CurrentPlayer == 1 && game.Player1Score >= PigGame.WinningScore) ||
+                                    (game.CurrentPlayer == 2 && game.Player2Score >= PigGame.WinningScore))
+                                {
+                                    game.GameOver = true;
+                                    game.Winner = $"Player {game.CurrentPlayer}";
+                                }
+
+                                game.TurnTotal = 0;
+                                game.CurrentPlayer = game.CurrentPlayer == 1 ? 2 : 1;
+
+                                SaveGameToSession(game);
+                                return RedirectToAction("Index");
+                            }
+                        }
+                    }
+                </pre>
+            </div>
+        </main>
+
+    </body>
+</html>
